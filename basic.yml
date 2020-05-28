@@ -1,5 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
+
 Description: AWS CloudFormation Test Configuration
+
 Metadata:
 
 Parameters:
@@ -137,12 +139,6 @@ Parameters:
       - db.t2.medium
       - db.t2.large
     ConstraintDescription: Must select a valid database instance type.
-  MultiAZ:
-    Description: Multi-AZ master database
-    Type: String
-    Default: "false"
-    AllowedValues: ["true", "false"]
-    ConstraintDescription: must be true or false.
 
 Mappings:
   AWSInstanceType2Arch:
@@ -478,8 +474,6 @@ Resources:
         Ref: DBUser
       MasterUserPassword:
         Ref: DBPassword
-      MultiAZ:
-        Ref: MultiAZ
       VPCSecurityGroups:
         - Ref: RDSSecurityGroup
     DeletionPolicy: Snapshot
