@@ -601,6 +601,8 @@ Resources:
         Ref: DBUser
       MasterUserPassword:
         Ref: DBPassword
+      DBSubnetGroupName:
+        Ref: RDSSubnetGroup
       VPCSecurityGroups:
         - Ref: RDSSecurityGroup
     DeletionPolicy: Snapshot
