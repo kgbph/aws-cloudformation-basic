@@ -2,8 +2,6 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Description: AWS CloudFormation Test Configuration
 
-Metadata:
-
 Parameters:
   HostedZoneName:
     Description: The route53 HostedZoneName. For example, "mydomain.com."  Don't forget the period at the end.
@@ -106,7 +104,7 @@ Parameters:
   DBInstanceClass:
     Description: The database instance type
     Type: String
-    Default: db.t1.micro
+    Default: db.t2.micro
     AllowedValues:
       - db.t1.micro
       - db.m1.small
@@ -417,14 +415,17 @@ Mappings:
       HVM64: ami-8e6aa0e3
       HVMG2: NOT_SUPPORTED
 
-Conditions:
-
 Resources:
+  Route53HostedZone:
+    Type: AWS::Route53::HostedZone
+    Properties:
+      Name:
+        Ref: HostedZoneName
   Route53RecordSet:
     Type: AWS::Route53::RecordSet
     Properties:
-      HostedZoneName:
-        Ref: HostedZoneName
+      HostedZoneId:
+        Ref: Route53HostedZone
       Name:
         Ref: HostedZoneName
       Type: A
@@ -433,6 +434,7 @@ Resources:
         - Fn::GetAtt:
             - EC2Instance
             - PublicIp
+  
   S3Bucket:
     Type: AWS::S3::Bucket
   SNSTopic:
@@ -559,7 +561,7 @@ Resources:
     Properties:
       InstanceType:
         Ref: InstanceType
-      SecurityGroups:
+      SecurityGroupIds:
         - Ref: EC2SecurityGroup
       KeyName:
         Ref: KeyName
@@ -614,13 +616,14 @@ Resources:
         - IpProtocol: tcp
           FromPort: 3306
           ToPort: 3306
-          SourceSecurityGroupName:
+          SourceSecurityGroupId:
             Ref: EC2SecurityGroup
       VpcId:
         Ref: VPC
   RDSSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
     Properties:
+      DBSubnetGroupDescription: RDS subnet group
       SubnetIds:
         - Ref: PrivateSubnet1
         - Ref: PrivateSubnet2
